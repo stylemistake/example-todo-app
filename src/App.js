@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
-function App() {
+let index = 0;
+
+const createTodo = text => ({
+  text,
+  id: index++,
+});
+
+const initialState = [
+  createTodo('foo'),
+];
+
+const useTodo = () => {
+  const [todos, setTodos] = useState(initialState);
+  const addTodo = text => {
+    setTodos(todos => [
+      ...todos,
+      createTodo(text),
+    ]);
+  };
+  return {
+    todos,
+    addTodo,
+  };
+};
+
+export const App = props => {
+  const { todos, addTodo } = useTodo();
+  const [newTodoText, setNewTodoText] = useState('');
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {todos.map(todo => (
+        <div
+          key={todo.id}
+          style={{
+            borderBottom: '1px solid black',
+          }}>
+          {todo.text}
+        </div>
+      ))}
+      <input
+        value={newTodoText}
+        onChange={e => setNewTodoText(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            addTodo(e.target.value);
+            setNewTodoText('');
+          }
+        }} />
     </div>
   );
-}
-
-export default App;
+};
